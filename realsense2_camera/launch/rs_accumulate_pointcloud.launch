@@ -1,0 +1,25 @@
+<launch>
+  <!-- <arg name="" default="nodelet_manager" /> -->
+  <arg name="rviz" default="false" />
+  <!-- <arg name="tf_prefix_t265"    default="t265"/> -->
+  <!-- <arg name="tf_prefix_d435"    default="d435"/> -->
+  <arg name="t265_serial_no" default="944222110522" />
+  <arg name="d435_serial_no" default="923322072570" />
+
+  <node pkg="tf" type="static_transform_publisher" name="map_odom" args="0.0 0.0 0.0 0.0 0.0 0.0 map t265_odom_frame 100" />
+  <node pkg="tf" type="static_transform_publisher" name="connect_cameras" args="0.0 0.0 -0.05 0.0 0.0 0.0 t265_link d435_link_frame 100" />
+
+  <include file="$(find realsense2_camera)/launch/rs_t265.launch">
+    <arg name="serial_no" value="$(arg t265_serial_no)" />
+    <arg name="camera"    value="t265" />
+  </include>
+
+  <include file="$(find realsense2_camera)/launch/rs_d435_camera_with_model.launch">
+    <arg name="serial_no" value="$(arg d435_serial_no)" />
+    <arg name="camera"    value="d435"/>
+    <arg name="publish_odom_tf" value="false"/>
+    <!-- <arg name="external_manager"  value="true"/> -->
+  </include>
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find realsense2_camera)/rviz/t265.rviz" required="true" if="$(arg rviz)"/>
+</launch>
