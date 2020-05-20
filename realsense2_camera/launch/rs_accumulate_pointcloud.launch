@@ -1,13 +1,13 @@
 <launch>
-  <!-- <arg name="" default="nodelet_manager" /> -->
-  <arg name="rviz" default="false" />
   <!-- <arg name="tf_prefix_t265"    default="t265"/> -->
   <!-- <arg name="tf_prefix_d435"    default="d435"/> -->
   <arg name="t265_serial_no" default="944222110522" />
   <arg name="d435_serial_no" default="923322072570" />
+  <arg name="rviz" default="false" />
 
   <node pkg="tf" type="static_transform_publisher" name="map_odom" args="0.0 0.0 0.0 0.0 0.0 0.0 map t265_odom_frame 100" />
-  <node pkg="tf" type="static_transform_publisher" name="connect_cameras" args="0.0 0.0 -0.05 0.0 0.0 0.0 t265_link d435_link_frame 100" />
+  <node pkg="tf" type="static_transform_publisher" name="t265_to_base" args="0.0 0.0 -0.03 0.0 0.0 0.0 t265_link base_link 100" />
+  <node pkg="tf" type="static_transform_publisher" name="base_to_d435" args="0.0 0.0 0.0 0.0 0.0 0.0 camera_link d435_link 100" />
 
   <include file="$(find realsense2_camera)/launch/rs_t265.launch">
     <arg name="serial_no" value="$(arg t265_serial_no)" />
@@ -18,8 +18,19 @@
     <arg name="serial_no" value="$(arg d435_serial_no)" />
     <arg name="camera"    value="d435"/>
     <arg name="publish_odom_tf" value="false"/>
-    <!-- <arg name="external_manager"  value="true"/> -->
+    <arg name="enable_infra1"   value="false"/>
+    <arg name="enable_infra2"   value="false"/>
+    <arg name="enable_fisheye"  value="false"/>
+    <arg name="depth_fps"       value="15"/>
+    <arg name="color_fps"       value="15"/>
   </include>
+
+  <node type="point_cloud2_assembler" pkg="laser_assembler"
+        name="d435_assembler">
+    <remap from="cloud" to="/d435/depth/color/points"/>
+    <param name="max_clouds" type="int" value="400" />
+    <param name="fixed_frame" type="string" value="d435_color_optical_frame" />
+  </node>
 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find realsense2_camera)/rviz/t265.rviz" required="true" if="$(arg rviz)"/>
 </launch>
