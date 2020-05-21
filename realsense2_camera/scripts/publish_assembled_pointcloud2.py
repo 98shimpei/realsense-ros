@@ -13,7 +13,7 @@ def assembled_pointcloud2_publisher():
 
     while not rospy.is_shutdown():
         end = rospy.Time.now()
-        begin = rospy.Time(end.secs-10, end.nsecs)
+        begin = rospy.Time(end.secs-3, end.nsecs)
         srv = rospy.ServiceProxy("/assemble_scans2", srv_AssembleScans2)
         try:
             res = srv(begin, end)

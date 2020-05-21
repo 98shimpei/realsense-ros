@@ -29,7 +29,8 @@
         name="d435_assembler">
     <remap from="cloud" to="/d435/depth/color/points"/>
     <param name="max_clouds" type="int" value="400" />
-    <param name="fixed_frame" type="string" value="d435_color_optical_frame" />
+    <!-- <param name="fixed_frame" type="string" value="d435_color_optical_frame" /> -->
+    <param name="fixed_frame" type="string" value="map" />
   </node>
 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find realsense2_camera)/rviz/t265.rviz" required="true" if="$(arg rviz)"/>
